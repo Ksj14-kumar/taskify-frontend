@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.current_task {
+  scrollbar-width: thin;
+  scrollbar-color: red;
+}
+
+/* Chrome, Edge, and Safari */
+.current_task::-webkit-scrollbar {
+  width: 8px;
+}
+
+.current_task::-webkit-scrollbar-track {
+  /*background: #13005A;*/
+  border-radius: 5px;
+}
+
+.current_task::-webkit-scrollbar-thumb {
+  background-color:#13005A;
+  border-radius: 10px;
+  border: .3px solid #13005A;
+}
+.done_task {
+  scrollbar-width: thin;
+  scrollbar-color: red;
+}
+
+/* Chrome, Edge, and Safari */
+.done_task::-webkit-scrollbar {
+  width: 8px;
+}
+
+.done_task::-webkit-scrollbar-track {
+  /*background: #13005A;*/
+  border-radius: 5px;
+}
+
+.done_task::-webkit-scrollbar-thumb {
+  background-color:#0b4804;
+  border-radius: 10px;
+  border: .3px solid #0b4804;
+}
+
+
+
+.deleted_task::-webkit-scrollbar {
+  width: 8px;
+}
+
+.deleted_task::-webkit-scrollbar-track {
+  /*background: #13005A;*/
+  border-radius: 5px;
+}
+
+.deleted_task::-webkit-scrollbar-thumb {
+  background-color:#9b0f0f;
+  border-radius: 10px;
+  border: .3px solid #9b0f0f;
+}
