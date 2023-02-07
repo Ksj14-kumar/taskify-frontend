@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   define:{
-    "process.env":{REACT_APP_BACKEND_DOMAIN:"https://taskify-5auk.onrender.com"}
+    "process.env":{REACT_APP_BACKEND_DOMAIN:"http://localhost:5000"}
   }
 })

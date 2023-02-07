@@ -7,6 +7,7 @@ import { RxCross2 } from "react-icons/rx"
 import Login from "./Component/Login";
 import axios from "axios";
 import toast, { Toaster } from 'react-hot-toast';
+import { ColorRing } from "react-loader-spinner"
 export type itemInterface = {
   taskId: string,
   task: string,
@@ -33,6 +34,7 @@ function App(): JSX.Element {
   const [user, setUser] = useState<userInfo>({} as userInfo)
   const [allTask, setAllTask] = useState<itemInterface[]>([])
   const [deletedTask, setAllDeleteTask] = useState<itemInterface[]>([])
+  const [isloading, setIsloading] = useState<boolean>(false)
   const [doneTask, setAllDoneTask] = useState<itemInterface[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const inputMobile = useRef<HTMLInputElement>(null)
@@ -46,7 +48,8 @@ function App(): JSX.Element {
   const SubmitTask = useCallback(() => {
     async function SubmitTask() {
       try {
-        await axios.post(process.env.REACT_APP_BACKEND_DOMAIN + "/api/v1/task/add", {
+        setIsloading(true)
+        await axios.post("/api/v1/task/add", {
           id: v4(),
           task,
           status: "not_done",
@@ -58,33 +61,35 @@ function App(): JSX.Element {
             withCredentials: true
           }
         )
+        if (task) {
+          setAllTask([{
+            taskId: `${v4()}`,
+            task,
+            status: "not_done",
+            header: "",
+            time: new Date().getTime()
+          }, ...allTask])
+          setTask("")
+        }
       } catch (err) {
         toast.error("Task not add")
       }
-      if (task) {
-        setAllTask([{
-          taskId: `${v4()}`,
-          task,
-          status: "not_done",
-          header: "",
-          time: new Date().getTime()
-        }, ...allTask])
-        setTask("")
-      }
+      setIsloading(false)
+      
     }
     task !== "" && SubmitTask()
     inputRef.current?.focus()
     inputMobile.current?.focus()
   }, [task])
-  const handleLogout = async() => {
-      try {
-        const res=await axios.get(process.env.REACT_APP_BACKEND_DOMAIN + "/api/v1/logout",{withCredentials:true})
-        if(res.status==200){
-          window.location.reload()
-        }
-      } catch (err) {
-        toast.error("not logout!!!, try again")
+  const handleLogout = async () => {
+    try {
+      const res = await axios.get("/api/v1/logout", { withCredentials: true })
+      if (res.status == 200) {
+        window.location.reload()
       }
+    } catch (err) {
+      toast.error("not logout!!!, try again")
+    }
   }
   function DeleteTask(id: string) {
     const res = allTask.filter(item => item.taskId != id)
@@ -122,7 +127,8 @@ function App(): JSX.Element {
   useEffect(() => {
     async function load() {
       try {
-        const res = await axios.get(process.env.REACT_APP_BACKEND_DOMAIN + "/api/v1/success", { withCredentials: true })
+        //  + 
+        const res = await axios.get("/api/v1/success", { withCredentials: true })
         if (res.status == 200) {
           window.localStorage.setItem("image", res.data.pic)
           window.localStorage.setItem("name", res.data.name)
@@ -138,7 +144,8 @@ function App(): JSX.Element {
   }, [])
   async function loadUserTasks(userId: string) {
     try {
-      const res = await axios.get(process.env.REACT_APP_BACKEND_DOMAIN + `/api/v1/task/user/${userId}`, { withCredentials: true })
+      //  + 
+      const res = await axios.get(`/api/v1/task/user/${userId}`, { withCredentials: true })
       if (res.status == 200) {
         const doneTaskList: itemInterface[] = res.data.filter((item: itemInterface) => item.status === "done")
         const notDoneTaskList: itemInterface[] = res.data.filter((item: itemInterface) => item.status === "not_done")
@@ -156,7 +163,7 @@ function App(): JSX.Element {
       try {
         const res = await axios({
           method: "PUT",
-          url: process.env.REACT_APP_BACKEND_DOMAIN + `/api/v1/task/update/${userId}/${taskId}`,
+          url: `/api/v1/task/update/${userId}/${taskId}`,
           data: {
             status, time
           },
@@ -197,7 +204,20 @@ function App(): JSX.Element {
                   }} id=""
                     value={task}
                   />
-                  <button className="focus:outline-none px-3 py-2 bg-blue-300 rounded-md ml-3 font-serif drop-shadow-md" onClick={() => { SubmitTask() }}>Save</button>
+                  <button
+                  disabled={isloading?true:false}
+                  className={` focus:outline-none px-3 py-2 bg-blue-300 rounded-md ml-3 font-serif drop-shadow-md`} onClick={() => { SubmitTask() }}>
+                    {isloading ? <ColorRing
+                      height="30"
+                      width="30"
+                      ariaLabel="blocks-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="blocks-wrapper"
+                      colors={['#e4e4e6',"#e4e4e6","#e4e4e6","#e4e4e6","#e4e4e6"]}
+
+                    /> : "Save"}
+                    
+                  </button>
                 </div>
               </div>
               <div className="task_container_list flex justify-evenly flex-wrap md:grid grid-cols-3 w-full bg-[#13005A]">
@@ -245,7 +265,7 @@ function EditComponent({ setEditComponent, showEditComponent, allTask, setAllTas
       try {
         const res = await axios({
           method: "PUT",
-          url: process.env.REACT_APP_BACKEND_DOMAIN + `/api/v1/task/update/edit/${userId}/${taskId}`,
+          url: `/api/v1/task/update/edit/${userId}/${taskId}`,
           data: {
             task, time
           },
@@ -259,7 +279,7 @@ function EditComponent({ setEditComponent, showEditComponent, allTask, setAllTas
   }
   return (
     <>
-      <main className="edit_component   w-screen absolute z-[999] p-[7rem] pt-[1rem]">
+      <main className="edit_component   w-screen absolute z-[999] md:p-[7rem] p-[1rem] pt-[1rem] pr-[2rem]">
         <div className="close flex justify-end mr-0">
           <button
             onClick={() => {

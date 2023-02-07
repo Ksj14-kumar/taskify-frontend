@@ -2,7 +2,7 @@ import { FcGoogle } from 'react-icons/fc';
 function Login() {
     async function handleLogin() {
         try {
-            window.open(process.env.REACT_APP_BACKEND_DOMAIN+"/api/v1/google/login","_self")
+            window.open("/api/v1/google/login","_self")
         } catch (err) {
             console.log(err)
         }
